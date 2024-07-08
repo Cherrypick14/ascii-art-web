@@ -1,0 +1,27 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ASCII Art Web</title>
+</head>
+<body>
+    <h1>ASCII Art Generator</h1>
+    <form action="/ascii-art" method="post">
+        <label for="text">Text:</label>
+        <input type="text" id="text" name="text" required>
+        <br>
+        <label for="banner">Banner:</label>
+        <select id="banner" name="banner">
+            <option value="standard">Standard</option>
+            <option value="shadow">Shadow</option>
+            <option value="thinkertoy">Thinkertoy</option>
+        </select>
+        <br>
+        <button type="submit">Generate</button>
+    </form>
+    <div id="result">
+        {{.Result}}
+    </div>
+</body>
+</html>
