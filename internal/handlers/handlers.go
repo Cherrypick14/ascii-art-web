@@ -1,12 +1,14 @@
 package handlers
 
 import (
-	"net/http"
-	"html/template"
-	"asciiweb/internal/ascii"
-	"fmt"
-	"log"
+    "net/http"
+    "html/template"
+    "asciiweb/internal/ascii"
+    "log"
+)
 
+var (
+    templates = template.Must(template.ParseFiles("internal/templates/index.html"))
 )
 
 type PageData struct {
@@ -14,13 +16,7 @@ type PageData struct {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-    t, err := template.ParseFiles("templates/index.html")
-    if err != nil {
-        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-        return
-    }
-
-	if err := t.Execute(w, nil); err != nil {
+    if err := templates.ExecuteTemplate(w, "index.html", nil); err != nil {
         log.Printf("Error executing template: %v", err)
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
     }
@@ -28,24 +24,24 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method != http.MethodPost {
-        http.Error(w, "Bad Request", http.StatusBadRequest)
+        http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
         return
     }
 
     input := r.FormValue("text")
     banner := r.FormValue("banner")
 
-	text := ascii.Processinput(input)
-	banner2, err := ascii.ReadBannerFile(banner)
-
-	if err != nil {
-		fmt.Print("Error reading banner file")
-	}
-    
+    text := ascii.Processinput(input)
+    banner2, err := ascii.ReadBannerFile(banner)
+    if err != nil {
+        log.Printf("Error reading banner file: %v", err)
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
 
     asciiArt, err := ascii.AsciiArt(text, banner2)
-	log.Printf("Error generating ASCII art: %v", err)
     if err != nil {
+        log.Printf("Error generating ASCII art: %v", err)
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
         return
     }
@@ -54,14 +50,7 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
         Result: asciiArt,
     }
 
-    t, err := template.ParseFiles("templates/index.html")
-	log.Printf("Error parsing template: %v", err)
-    if err != nil {
-        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-        return
-    }
-
-    if err := t.Execute(w, data); err != nil {
+    if err := templates.ExecuteTemplate(w, "index.html", data); err != nil {
         log.Printf("Error executing template: %v", err)
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
     }
