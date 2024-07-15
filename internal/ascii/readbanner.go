@@ -7,10 +7,11 @@ import (
 
 func ReadBannerFile(banner string) ([]string, error) {
 
+	path := "internal/ascii/"
 	if banner == "" {
-	   banner = "standard.txt"
+	   banner = path + "standard.txt"
 	}
-	fileName := banner + ".txt"
+	fileName := path + banner + ".txt"
 	file, err := os.Open(fileName)
 	if err != nil {
 		return nil, err

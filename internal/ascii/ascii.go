@@ -21,7 +21,7 @@ func AsciiArt(words []string, contents2 []string) (string,error) {
 						return "Error: Input contains non-ASCII characters", nil
 					}
 					index := int(char-' ')*9 + 1 + i
-					result.WriteString(contents2[index])
+					result.WriteString(string(contents2[index]))
 				}
 				result.WriteString("\n")
 			}

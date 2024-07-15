@@ -2,13 +2,13 @@ package ascii
 
 import (
 	"fmt"
-	"os"
+	// "os"
 	"strings"
 )
 
-func Processinput(text string) []string {
+func Processinput(inputText string) []string {
 	// Grab string to generate Ascii represatantion.
-	inputText := os.Args[1]
+	
 
 	switch inputText {
 	case "":
