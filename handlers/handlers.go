@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-var templates = template.Must(template.ParseFiles("internal/templates/index.html"))
+var templates = template.Must(template.ParseFiles("templates/index.html"))
 
 type PageData struct {
 	Result string
