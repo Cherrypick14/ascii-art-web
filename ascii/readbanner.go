@@ -6,8 +6,8 @@ import (
 )
 
 func ReadBannerFile(banner string) ([]string, error) {
-
-	path := "internal/ascii/"
+	
+	path := "ascii/"
 	if banner == "" {
 	   banner = path + "standard.txt"
 	}
