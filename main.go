@@ -14,6 +14,8 @@ func main() {
 	// Handle the /ascii-art path by processing the form submission
 	http.HandleFunc("/ascii-art", handlers.AsciiArtHandler)
 
+	http.HandleFunc("/nonexistent", handlers.NotFoundHandler)
+
 	// Start the server on port 8080
 	log.Println("Server started on :8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
