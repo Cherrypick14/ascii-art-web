@@ -25,6 +25,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Check if input or banner is empty
 		if input == "" || banner == "" {
+			log.Println("400 Bad Request: Input or Banner is empty")
 			http.Error(w, "Input or Banner is empty", http.StatusBadRequest)
 			return
 		}
@@ -33,30 +34,32 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		text := ascii.Processinput(input)
 		banner2, err := ascii.ReadBannerFile(banner)
 		if err != nil {
-			log.Printf("Error reading banner file: %v", err)
+			log.Printf("500 Internal Server Error: Error reading banner file: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
 		asciiArt, err := ascii.AsciiArt(text, banner2)
 		if err != nil {
-			log.Printf("Error generating ASCII art: %v", err)
+			log.Printf("500 Internal Server Error: Error generating ASCII art: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
 		data.Result = asciiArt
+		log.Println("200 OK: ASCII art generated successfully")
 	}
 
 	// Render the template
 	if err := templates.ExecuteTemplate(w, "index.html", data); err != nil {
-		log.Printf("Error executing template: %v", err)
+		log.Printf("500 Internal Server Error: Error executing template: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 }
 
 func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
+		log.Println("405 Method Not Allowed: Only POST requests are allowed")
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
@@ -66,6 +69,7 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if input or banner is empty
 	if input == "" || banner == "" {
+		log.Println("400 Bad Request: Input or Banner is empty")
 		http.Error(w, "Input or Banner is empty", http.StatusBadRequest)
 		return
 	}
@@ -74,14 +78,14 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	text := ascii.Processinput(input)
 	banner2, err := ascii.ReadBannerFile(banner)
 	if err != nil {
-		log.Printf("Error reading banner file: %v", err)
+		log.Printf("500 Internal Server Error: Error reading banner file: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	asciiArt, err := ascii.AsciiArt(text, banner2)
 	if err != nil {
-		log.Printf("Error generating ASCII art: %v", err)
+		log.Printf("500 Internal Server Error: Error generating ASCII art: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -89,11 +93,18 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	data := PageData{
 		Result: asciiArt,
 	}
+	log.Println("200 OK: ASCII art generated successfully")
 
 	// Render the template with the generated ASCII art
 	if err := templates.ExecuteTemplate(w, "index.html", data); err != nil {
-		log.Printf("Error executing template: %v", err)
+		log.Printf("500 Internal Server Error: Error executing template: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+}
+
+func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("404 Not Found: Resource not found")
+	http.Error(w, "404 Not Found", http.StatusNotFound )
+	
 }
