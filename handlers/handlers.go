@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-var templates = template.Must(template.ParseFiles("templates/index.html"))
+// var templates = template.Must(template.ParseFiles("templates/index.html"))
 
 type PageData struct {
 	Result string
@@ -51,10 +51,13 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Render the template
-	if err := templates.ExecuteTemplate(w, "index.html", data); err != nil {
+	tpl, err := template.ParseFiles("templates/index.html")
+	if err != nil {
 		log.Printf("500 Internal Server Error: Error executing template: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
+
+	tpl.Execute(w, data)
 }
 
 func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
@@ -96,11 +99,14 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("200 OK: ASCII art generated successfully")
 
 	// Render the template with the generated ASCII art
-	if err := templates.ExecuteTemplate(w, "index.html", data); err != nil {
+	tpl, err := template.ParseFiles("template/index.html")
+	if err != nil {
 		log.Printf("500 Internal Server Error: Error executing template: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+
+	tpl.Execute(w, data)
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
