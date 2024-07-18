@@ -1,15 +1,14 @@
 package ascii
 
 import (
-	"os"
 	"bufio"
+	"os"
 )
 
 func ReadBannerFile(banner string) ([]string, error) {
-	
 	path := "ascii/"
 	if banner == "" {
-	   banner = path + "standard.txt"
+		banner = path + "standard.txt"
 	}
 	fileName := path + banner + ".txt"
 	file, err := os.Open(fileName)
