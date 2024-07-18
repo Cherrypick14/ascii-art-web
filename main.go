@@ -1,9 +1,10 @@
 package main
 
 import (
-	"asciiweb/handlers"
 	"log"
 	"net/http"
+
+	"asciiweb/handlers"
 )
 
 func main() {
