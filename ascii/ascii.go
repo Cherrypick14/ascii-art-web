@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func AsciiArt(words []string, contents2 []string) (string,error) {
+func AsciiArt(words []string, contents2 []string) (string, error) {
 	var result strings.Builder
 
 	countSpace := 0
