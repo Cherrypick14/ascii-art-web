@@ -4,25 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/styles.css">
+    <link rel="shortcut icon" href="static/favicon-32x32.png" type="image/x-icon">
     <title>Home</title>
 </head>
-<body>
-    <h1>ASCII Art Generator</h1>
-    <form action="/" method="post">
-        <label for="text">Text:</label>
-        <input type="text" id="text" name="text" required>
+<body class="bd" style="background-image:
+  linear-gradient(450deg, #3d3393 0%, #2b76b9 37%, #2cacd1 65%, #35eb93 100%),
+  linear-gradient(-450deg, #3d3393 0%, #2b76b9 37%, #2cacd1 65%, #35eb93 100%);
+    height: 200px;
+    overflow: hidden;" >
+    <h1 style="text-align: 
+    center; 
+    font-family: Baskerville, Baskerville Old Face, Hoefler Text, Garamond, Times New Roman, serif;
+    font-size: 3em;
+    color: #e7f0fd;
+   
+    " >ASCII Art Generator</h1>
+    <form action="/" method="post" style="text-align: center; font-weight: 600; font-size:px;">
+        <label for="text"style="color: #e7f0fd; font-size:25px;">Text:</label>
+        <input type="text" id="text" name="text" placeholder="Enter a text ..." style="padding: 20px 20px;  border-radius: 5px; text-align: center;">
         <br>
-        <label for="banner">Banner:</label>
-        <select id="banner" name="banner">
-            <option value="standard">Standard</option>
-            <option value="shadow">Shadow</option>
-            <option value="thinkertoy">Thinkertoy</option>
-        </select>
-        <br>
-        <button type="submit">Generate</button>
+            
+           
+            <div class="form-group" style="padding-top: 40px;">
+                <label>Choose Banner Type:</label> <br><br>
+                <label for="banner">Standard </label>
+                <input type="radio" name="banner" value="standard" checked>
+            
+                <label for="banner">Shadow</label>
+                <input type="radio" name="banner" value="shadow">
+                
+                <label for="banner"> Thinkertoy</label>
+                <input type="radio" name="banner" value="thinkertoy">
+              </div>
+            
+            <br>
+            <button type="submit" style="display: inline-block;
+            padding:20px 20px;
+            margin-top: 2em;
+            ">Generate
+            </button>
+        
+        
     </form>
-    <div id="result">
-         <pre>{{.Result}}</pre>
+    <div id="result" style="text-align: center;
+        background-color:#e7f0fd;
+        padding:40px 40px;
+        margin:50px auto;
+        height:300px;
+        max-width:1000px;
+        overflow: scroll;
+        border-radius: 10px;">
+        
+            <pre>{{.Result}}</pre>
+        
     </div>
 </body>
 </html>
