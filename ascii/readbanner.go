@@ -9,11 +9,13 @@ import (
 )
 
 func ReadBannerFile(banner string) ([]string, error) {
-	path := "ascii/"
+	path := "banners/"
 	if banner == "" {
 		banner = path + "standard.txt"
 	}
+
 	fileName := path + banner + ".txt"
+	fmt.Println(fileName)
 
 	hash := checksum([]byte(fileName))
 
@@ -22,7 +24,7 @@ func ReadBannerFile(banner string) ([]string, error) {
 	hashThinkertoy := "f8ac20c65b51ca7640958022a063ec46572637960c5a821a24b197d38f75afb1"
 
 	if hash != hashStandard && hash != hashShadow && hash != hashThinkertoy {
-		fmt.Println("Error reading file")
+		return nil, fmt.Errorf("error reading file")
 	}
 
 	file, err := os.Open(fileName)
