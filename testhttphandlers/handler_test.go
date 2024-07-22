@@ -1,110 +1,121 @@
 package testhttphandlers
 
 import (
+	// "asciiweb/ascii"
 	"net/http"
 	"net/http/httptest"
-     "testing"
-	"asciiweb/handlers"
 	"strings"
+	"testing"
+	"asciiweb/handlers"
 )
 
-type HomeHandlerTestCase struct {
-	method         string
-	target         string
-	expectedStatus int
-}
-
 func TestHomeHandler(t *testing.T) {
-	testCases := []HomeHandlerTestCase{
+	tests := []struct {
+		name           string
+		method         string
+		url            string
+		formData       map[string]string
+		expectedStatus int
+		expectedBody   string
+	}{
 		{
-			method:         "GET",
-			target:         "/",
+			name:           "GET request to root",
+			method:         http.MethodGet,
+			url:            "/",
 			expectedStatus: http.StatusOK,
+			expectedBody:   "ASCII Art Generator", // Assuming this text is in your template
 		},
 		{
-			method:         "POST",
-			target:         "/",
-			expectedStatus: http.StatusMethodNotAllowed,
+			name:           "POST request with valid data",
+			method:         http.MethodPost,
+			url:            "/",
+			formData:       map[string]string{"text": "Hello", "banner": "standard"},
+			expectedStatus: http.StatusOK,
+			expectedBody:   "ASCII art", // Part of the expected result
 		},
 		{
-			method:         "PUT",
-			target:         "/",
-			expectedStatus: http.StatusMethodNotAllowed,
+			name:           "POST request with empty text",
+			method:         http.MethodPost,
+			url:            "/",
+			formData:       map[string]string{"text": "", "banner": "standard"},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "Input or Banner is empty",
 		},
 		{
-			method:         "GET",
-			target:         "/non-existent",
+			name:           "POST request with empty banner",
+			method:         http.MethodPost,
+			url:            "/",
+			formData:       map[string]string{"text": "Hello", "banner": ""},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "Input or Banner is empty",
+		},
+		{
+			name:           "GET request to non-root path",
+			method:         http.MethodGet,
+			url:            "/nonexistent",
 			expectedStatus: http.StatusNotFound,
-		},
-	}
-
-	for _, tc := range testCases {
-		req, err := http.NewRequest(tc.method, tc.target, nil)
-		if err != nil {
-			t.Fatalf("Failed to create request: %v", err)
-		}
-
-		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(handlers.HomeHandler)
-
-		handler.ServeHTTP(rr, req)
-
-		if status := rr.Code; status != tc.expectedStatus {
-			t.Errorf("Expected status code %v, but got %v", tc.expectedStatus, status)
-		}
-
-	}
-}
-
-type AsciiArtHandlerTestCase struct {
-	method         string
-	target         string
-	formData       string
-	expectedStatus int
-}
-
-func TestAsciiArtHandler(t *testing.T) {
-	testCases := []AsciiArtHandlerTestCase{
-		{
-			method:         "POST",
-			target:         "/ascii",
-			formData:       "text=Hello%2C+world!&banner=standard",
-			expectedStatus: http.StatusOK,
+			expectedBody:   "404 Not Found",
 		},
 		{
-			method:         "GET",
-			target:         "/ascii",
-			formData:       "",
+			name:           "PUT request (not allowed)",
+			method:         http.MethodPut,
+			url:            "/",
 			expectedStatus: http.StatusMethodNotAllowed,
-		},
-		{
-			method:         "POST",
-			target:         "/ascii",
-			formData:       "text=Hello%2C+world!",
-			expectedStatus: http.StatusBadRequest,
-		},
-		{
-			method:         "POST",
-			target:         "/ascii",
-			formData:       "banner=standard",
-			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "Method Not Allowed",
 		},
 	}
 
-	for _, tc := range testCases {
-		req, err := http.NewRequest(tc.method, tc.target, strings.NewReader(tc.formData))
-		if err != nil {
-			t.Fatalf("Failed to create request: %v", err)
-		}
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req, err := http.NewRequest(tt.method, tt.url, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(handlers.AsciiArtHandler)
+			if tt.formData != nil {
+				req.PostForm = make(map[string][]string)
+				for key, value := range tt.formData {
+					req.PostForm.Set(key, value)
+				}
+			}
 
-		handler.ServeHTTP(rr, req)
+			rr := httptest.NewRecorder()
+			handler := http.HandlerFunc(handlers.HomeHandler)
 
-		if status := rr.Code; status != tc.expectedStatus {
-			t.Errorf("Expected status code %v, but got %v", tc.expectedStatus, status)
-		}
+			handler.ServeHTTP(rr, req)
+
+			if status := rr.Code; status != tt.expectedStatus {
+				t.Errorf("handler returned wrong status code: got %v want %v",
+					status, tt.expectedStatus)
+			}
+
+			if !strings.Contains(rr.Body.String(), tt.expectedBody) {
+				t.Errorf("handler returned unexpected body: got %v want %v",
+					rr.Body.String(), tt.expectedBody)
+			}
+		})
+	}
+}
+
+func TestNotFoundHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/nonexistent", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(handlers.NotFoundHandler)
+
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusNotFound {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusNotFound)
+	}
+
+	expected := "404 Not Found"
+	if !strings.Contains(rr.Body.String(), expected) {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rr.Body.String(), expected)
 	}
 }
