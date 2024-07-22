@@ -1,12 +1,33 @@
 package ascii
 
 import (
-	// "fmt"
+	"bufio"
+	"os"
 	"strings"
 )
 
-func AsciiArt(words []string, contents2 []string) (string, error) {
+func AsciiArt(input string, banner string) (string, error) {
 	var result strings.Builder
+
+	words := strings.Split(input, "\n")
+
+	path := "ascii/banner/"
+
+	banner2 := path + banner + ".txt"
+
+	file, err := os.Open(banner2)
+	if err != nil {
+		return "", err
+	}
+
+	defer file.Close()
+
+	var contents []string
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		contents = append(contents, scanner.Text())
+	}
 
 	countSpace := 0
 
@@ -21,7 +42,7 @@ func AsciiArt(words []string, contents2 []string) (string, error) {
 						return "Error: Input contains non-ASCII characters", nil
 					}
 					index := int(char-' ')*9 + 1 + i
-					result.WriteString(string(contents2[index]))
+					result.WriteString(string(contents[index]))
 				}
 				result.WriteString("\n")
 			}

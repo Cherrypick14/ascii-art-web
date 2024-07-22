@@ -11,28 +11,6 @@ type PageData struct {
 	Result string
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("HomeHandler called")
-
-	if r.Method != http.MethodGet {
-		log.Println("405 Method Not Allowed: Only GET requests are allowed")
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	var data PageData
-
-	// Render the template
-	tpl, err := template.ParseFiles("templates/index.html")
-	if err != nil {
-		log.Printf("500 Internal Server Error: Error executing template: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	tpl.Execute(w, data)
-}
-
 func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		log.Println("405 Method Not Allowed: Only POST requests are allowed")
@@ -50,16 +28,7 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Process input and banner
-	text := ascii.Processinput(input)
-	banner2, err := ascii.ReadBannerFile(banner)
-	if err != nil {
-		log.Printf("500 Internal Server Error: Error reading banner file: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	asciiArt, err := ascii.AsciiArt(text, banner2)
+	asciiArt, err := ascii.AsciiArt(input, banner)
 	if err != nil {
 		log.Printf("500 Internal Server Error: Error generating ASCII art: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

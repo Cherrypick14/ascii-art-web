@@ -10,10 +10,8 @@ import (
 func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	// Handle the root path by serving the home page
-	http.HandleFunc("/", handlers.HomeHandler)
 	// Handle the /ascii-art path by processing the form submission
-	http.HandleFunc("/ascii-art", handlers.AsciiArtHandler)
+	http.HandleFunc("/", handlers.AsciiArtHandler)
 
 	http.HandleFunc("/nonexistent", handlers.NotFoundHandler)
 
