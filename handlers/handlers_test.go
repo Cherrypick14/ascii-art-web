@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"net/http"
@@ -6,11 +6,13 @@ import (
 	"net/url"
 	"strings"
 	"testing"
-
-	"asciiweb/handlers"
 )
 
 func TestHomeHandler(t *testing.T) {
+	type args struct {
+		w http.ResponseWriter
+		r *http.Request
+	}
 	tests := []struct {
 		name           string
 		method         string
@@ -74,9 +76,14 @@ func TestHomeHandler(t *testing.T) {
 			}
 
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(handlers.HomeHandler)
 
-			handler.ServeHTTP(rr, req)
+			// Wrap HomeHandler with the args struct
+			args := args{
+				w: rr,
+				r: req,
+			}
+
+			HomeHandler(args.w, args.r)
 
 			if status := rr.Code; status != tt.expectedStatus {
 				t.Errorf("handler returned wrong status code: got %v want %v", status, tt.expectedStatus)

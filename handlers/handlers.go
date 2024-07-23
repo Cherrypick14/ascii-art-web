@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"asciiweb/ascii"
 	"html/template"
 	"log"
 	"net/http"
+
+	"asciiweb/ascii"
 )
 
 type PageData struct {
@@ -13,7 +14,9 @@ type PageData struct {
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		NotFoundHandler(w, r)
+		// NotFoundHandler(w, r)
+		http.Error(w, "404 Page Not Found", http.StatusNotFound)
+		log.Println("Resource not found")
 		return
 	}
 
@@ -22,12 +25,13 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		// Render the form
 		tpl, err := template.ParseFiles("templates/index.html")
 		if err != nil {
-			http.Error(w, "Error parsing template", http.StatusInternalServerError)
+			http.Error(w, "404 Page Not Found: Error parsing template", http.StatusNotFound)
+			log.Println("template/index.html not found")
 			return
 		}
 		// Create an instance of PageData with the desired result
 		data := PageData{
-			Result: "ASCII Art Generator", // Replace with your actual result
+			Result: "ASCII Art Generator", // Replace with your actual result(Ascii-art)
 		}
 
 		// Execute the template with the provided data
@@ -37,6 +41,18 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case http.MethodPost:
+
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			log.Println("I'm out")
+			return
+		}
+		// if http.MethodPost != "post" {
+		// 	http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		// 	log.Println("I'm out")
+		// 	return
+		// }
+
 		// Process the form and generate ASCII art
 		input := r.FormValue("text")
 		banner := r.FormValue("banner")
@@ -49,32 +65,36 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 		asciiArt, err := ascii.AsciiArt(input, banner)
 		if err != nil {
-			log.Printf("500 Internal Server Error: Error generating ASCII art: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			log.Printf("500 Internal Server Error: Error generating ASCII art: %v", err)
+
 			return
 		}
 
 		data := PageData{
 			Result: asciiArt,
 		}
+
+		w.WriteHeader(http.StatusOK)
+
 		log.Println("200 OK: ASCII art generated successfully")
 
 		// Render the template with the generated ASCII art
 		tpl, err := template.ParseFiles("templates/index.html")
 		if err != nil {
-			log.Printf("500 Internal Server Error: Error executing template: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			log.Printf("500 Internal Server Error: Error executing template: %v", err)
 			return
 		}
 
 		tpl.Execute(w, data)
 
-	default:
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		// default:
+		// 	http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 }
 
-func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("404 Not Found: Resource not found")
-	http.Error(w, "404 Not Found", http.StatusNotFound)
-}
+// func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("404 Not Found: Resource not found")
+// 	http.Error(w, "404 Not Found", http.StatusNotFound)
+// }
