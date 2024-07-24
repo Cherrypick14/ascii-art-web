@@ -10,6 +10,7 @@ import (
 func AsciiArt(input string, banner string) (string, error) {
 	var result strings.Builder
 
+	input = strings.ReplaceAll(input, "\r", "\n")
 	words := strings.Split(input, "\n")
 
 	path := "ascii/banner/"
@@ -18,7 +19,7 @@ func AsciiArt(input string, banner string) (string, error) {
 
 	file, err := os.Open(banner2)
 	if err != nil {
-		return "", err
+		return "404", err
 	}
 
 	defer file.Close()
@@ -40,7 +41,7 @@ func AsciiArt(input string, banner string) (string, error) {
 						continue
 					}
 					if !(char >= 32 && char <= 126) {
-						return "", fmt.Errorf("error")
+						return "400", fmt.Errorf("error")
 					}
 					index := int(char-' ')*9 + 1 + i
 					result.WriteString(string(contents[index]))

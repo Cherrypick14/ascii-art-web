@@ -14,9 +14,11 @@
     height: 100vh;
     overflow: auto;">
     <h1 style="text-align: center; font-family: Baskerville, Baskerville Old Face, Hoefler Text, Garamond, Times New Roman, serif; font-size: 3em; color: #e7f0fd;">ASCII Art Generator</h1>
+    <h2 style="color: #e7f0fd; font-size:25px; text-align: center;">Text</h2>
     <form action="/ascii-art" method="post" style="text-align: center; font-weight: 600;">
-        <label for="text" style="color: #e7f0fd; font-size:25px;">Text:</label>
-        <input type="text" id="text" name="text" placeholder="Enter a text ..." style="padding: 20px 20px; border-radius: 5px; text-align: center;">
+        <!-- <label for="text" style="color: #e7f0fd; font-size:25px;">Text:</label> -->
+        <textarea name="usertext" id="" cols="30" rows="10" placeholder="Enter a text or something"required></textarea>
+        <!-- <input type="text" id="text" name="text" placeholder="Enter a text ..." style="padding: 20px 20px; border-radius: 5px; text-align: center;"> -->
         <br>
       
         <div class="form-group" style="padding-top: 40px;">

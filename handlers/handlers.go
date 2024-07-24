@@ -21,7 +21,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	// Render the form
 	tpl, err := template.ParseFiles("templates/index.html")
 	if err != nil {
-		http.Error(w, "404 Page Not Found: Error parsing template", http.StatusNotFound)
+		http.Error(w, "404 Page Not Found", http.StatusNotFound)
 		log.Println("template/index.html not found")
 		return
 	}
@@ -50,7 +50,7 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		// Process the form and generate ASCII art
-		input := r.FormValue("text")
+		input := r.FormValue("usertext")
 		banner := r.FormValue("banner")
 
 		if input == "" || banner == "" {
@@ -62,10 +62,17 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 
 		asciiArt, err := ascii.AsciiArt(input, banner)
 		if err != nil {
-			http.Error(w, "Unsupported input: Cannot generate ASCII art for the provided text", http.StatusBadRequest)
-			log.Printf("400 status code: %v", err)
+			if asciiArt == "400" {
+				http.Error(w, "Bad request 400", http.StatusBadRequest)
+				log.Printf("400 status code: %v", err)
+				return
 
-			return
+			} else if asciiArt == "404" {
+				http.Error(w, "NOt found 404", http.StatusNotFound)
+				log.Printf("404 status code: %v", err)
+
+				return
+			}
 		}
 
 		data := PageData{
@@ -79,8 +86,8 @@ func AsciiArtHandler(w http.ResponseWriter, r *http.Request) {
 		// Render the template with the generated ASCII art
 		tpl, err := template.ParseFiles("templates/index.html")
 		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			log.Printf("500 Internal Server Error: Error executing template: %v", err)
+			http.Error(w, "404 Page Not Found", http.StatusNotFound)
+			log.Println("template/index.html not found")
 			return
 		}
 
