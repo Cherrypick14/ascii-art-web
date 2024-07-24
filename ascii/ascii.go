@@ -2,6 +2,7 @@ package ascii
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -39,7 +40,7 @@ func AsciiArt(input string, banner string) (string, error) {
 						continue
 					}
 					if !(char >= 32 && char <= 126) {
-						return "Error: Input contains non-ASCII characters", nil
+						return "", fmt.Errorf("error")
 					}
 					index := int(char-' ')*9 + 1 + i
 					result.WriteString(string(contents[index]))
